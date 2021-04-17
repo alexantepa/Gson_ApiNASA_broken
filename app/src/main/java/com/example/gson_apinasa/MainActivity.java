@@ -39,12 +39,13 @@ public class MainActivity extends AppCompatActivity {
         describText = findViewById(R.id.describ);
         spaceImage  = findViewById(R.id.space);
 
-
+        SpaceTask spaceTask = new SpaceTask();
+        spaceTask.execute();
     }
-    private class SpaceTask extends AsyncTask<String, Void, Response> {
+    private class SpaceTask extends AsyncTask<Void, Void, Void> {
 
         @Override
-        protected Response doInBackground(String... strings) {
+        protected Void doInBackground(Void... voids) {
             //подготовка запроса
             spaceClient = new OkHttpClient();
             //подготовка запроса с параментрами
@@ -54,27 +55,31 @@ public class MainActivity extends AppCompatActivity {
 
             //отправка запроса
             try {
-                Response spaceResponse = spaceClient.newCall(spaceRequest).execute();
-                return spaceResponse;
+                Response spaceResp = spaceClient.newCall(spaceRequest).execute();
+                Gson gson = new Gson();
+                spaceResponse = gson.fromJson(spaceResp.body().string(), SpaceResponse.class);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
         }
-
         @Override
-        protected void onPostExecute(Response response) {
+        protected void onPostExecute(Void response) {
             super.onPostExecute(response);
-            if (response != null) {
-                Gson gson = new Gson();
-                try {
-                    spaceResponse = gson.fromJson(response.body().string(), SpaceResponse.class);
-                    describText.setText(spaceResponse.explanation);
-                    //Picasso picasso = new Picasso.Builder(getApplicationContext()).dow;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            describText.setText(spaceResponse.explanation);
+            //Picasso picasso = new Picasso.Builder(getApplicationContext()).dow;\
+            if (spaceResponse.media_type.equals("image")){
+            Picasso.get().load(spaceResponse.url)
+                    .placeholder(R.drawable.spaceplug)
+                    .into(spaceImage);
+            }else {
+                spaceImage.setImageResource(R.drawable.spaceplug);
+                describText.append("\n" + spaceResponse.url);
+                Toast.makeText(getApplicationContext(), "Сегодня доступно видео", Toast.LENGTH_SHORT).show();
             }
+
         }
+
+
     }
 }
