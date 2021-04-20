@@ -20,6 +20,9 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     TextView describText;
@@ -66,7 +69,24 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void response) {
             super.onPostExecute(response);
-            describText.setText(spaceResponse.explanation);
+            //перенд показом текста запросим перевод
+            // 1 настроить класс - тело и записать в него английский текст
+            BodyTranslate [] bodyTranslates = new BodyTranslate[1];
+            bodyTranslates[0] = new BodyTranslate();
+            bodyTranslates[0].Text = spaceResponse.explanation;
+            Toast.makeText(getApplicationContext(), bodyTranslates[0].Text, Toast.LENGTH_SHORT).show();
+
+            //построить объект Retrofit
+            Retrofit retrofit = new Retrofit.Builder()
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .baseUrl(AzureTranslateAPI.address)
+                    .build();
+            //создать объект интерфейса
+            AzureTranslateAPI api = retrofit.create(AzureTranslateAPI.class);
+            //отправить запрос
+            Call<ResponseTranslate[]> call = api.requestTranslate(bodyTranslates);
+            call.enqueue(new ResponseCallback());
+            //describText.setText(spaceResponse.explanation);
             //Picasso picasso = new Picasso.Builder(getApplicationContext()).dow;\
             if (spaceResponse.media_type.equals("image")){
             Picasso.get().load(spaceResponse.url)
@@ -81,5 +101,24 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    private class ResponseCallback implements retrofit2.Callback<ResponseTranslate[]> {
+
+        @Override
+        public void onResponse(Call<ResponseTranslate[]> call, retrofit2.Response<ResponseTranslate[]> response) {
+            if (response.isSuccessful() && response.body()[0].textTranslates.size() != 0){
+                String s = response.body()[0].toString();
+                describText.setText(s);
+            }else {
+                Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
+            }
+            //if (response.headers().)
+        }
+
+        @Override
+        public void onFailure(Call<ResponseTranslate[]> call, Throwable t) {
+            Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
+        }
     }
 }
