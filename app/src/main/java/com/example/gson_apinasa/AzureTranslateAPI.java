@@ -7,7 +7,7 @@ import retrofit2.http.POST;
 
 public interface AzureTranslateAPI {
     String address = "https://api.cognitive.microsofttranslator.com";
-    String api_key = "891c1008d9a84e9c90fbe6e59fd1d62";
+    String api_key = "891c1008d9a84e9c90fbe6e59fd1d62b";
 
     @POST("/translate?api-version=3.0&to=ru")
     @Headers({

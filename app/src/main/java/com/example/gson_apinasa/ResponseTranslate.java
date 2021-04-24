@@ -8,12 +8,12 @@ public class ResponseTranslate {
         String to;
     }
 
-    ArrayList<TextTranslate> textTranslates = new ArrayList<>();
+    ArrayList<TextTranslate> translations = new ArrayList<>();
 
     @Override
     public String toString() {
         String s = "";
-        for (TextTranslate tt: textTranslates) {
+        for (TextTranslate tt: translations) {
             s += tt.text + "\n";
         }
         return s;

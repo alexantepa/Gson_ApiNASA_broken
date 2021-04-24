@@ -33,6 +33,18 @@
             android:id="@+id/describ"
             android:layout_margin="7dp"
             android:textSize="15sp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:id="@+id/speechButton"
+            android:textSize="17sp"
+            android:text="Озвучить текст"
+            android:gravity="center_horizontal"
+            android:textColor="@color/colorAccent"
+            android:onClick="getVoices"/>
+
     </LinearLayout>
 
 </ScrollView>
